@@ -31,7 +31,7 @@ const HeatmapView = () => {
   const mapRef = useRef(null);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyB8Z-9vlITIqlvT_PBb-xLGcOGse8lLimE',
+    googleMapsApiKey: '',  // Add your googlemap API secret key here
     libraries,
   });
 

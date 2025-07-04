@@ -9,7 +9,7 @@ A modern, full-stack municipal complaint management system built with the MERN s
 - 🔐 User authentication with secure role-based access
 - 📝 Submit and manage complaints by category and location
 - 📊 Admin dashboard to verify, prioritize, and resolve issues
-- 🗺️ Real-time complaint heatmap visualization using GeoJSON/Mapbox
+- 🗺️ Real-time complaint heatmap visualization using Google Maps API
 - 📂 Profile page with edit and complaint history
 - 📧 Email/status notifications
 - 📱 Fully responsive and mobile-friendly interface
@@ -22,7 +22,7 @@ A modern, full-stack municipal complaint management system built with the MERN s
 - **React.js** + **Vite** for blazing-fast SPA
 - **Tailwind CSS** for utility-first UI styling
 - **Axios** for API communication
-- **Mapbox** for rendering geographic heatmaps
+- **Google Maps JavaScript API** for rendering geographic heatmaps (replace with your own API key)
 
 ### Backend
 - **Node.js** + **Express.js** REST API
@@ -108,6 +108,8 @@ Below are some of the key interface pages of the SmartCity Complaint Management 
 ![Heatmap](Images/img06.png)
 
 > Real-time heatmap displaying complaint density based on location. Helps identify problem zones in the city using geographic visualization.
+Note: The heatmap uses the Google Maps JavaScript API. Please add your own API key inside the frontend file:
+src/pages/HeatmapView.jsx
 
 ---
 

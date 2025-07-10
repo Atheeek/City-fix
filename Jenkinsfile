@@ -15,7 +15,7 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t atheek/cityfix-backend ./backend'
+        sh 'docker build -t atheekrhmn/cityfix-backend ./backend'
       }
     }
 
@@ -23,8 +23,8 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push atheek/cityfix-backend
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push atheekrhmn/cityfix-backend
           '''
         }
       }
@@ -34,17 +34,17 @@ pipeline {
       steps {
         sshagent (credentials: ['ec2-ssh-key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu@YOUR_EC2_IP << EOF
-              docker pull atheek/cityfix-backend
+            ssh -o StrictHostKeyChecking=no ec2-user@YOUR_EC2_PUBLIC_IP << 'EOF'
+              docker pull atheekrhmn/cityfix-backend
 
               docker stop cityfix-backend || true
               docker rm cityfix-backend || true
 
               docker run -d -p 5000:5000 \
-                -e MONGO_URI="$MONGO_URI" \
-                -e JWT_SECRET="$JWT_SECRET" \
+                -e MONGO_URI="${MONGO_URI}" \
+                -e JWT_SECRET="${JWT_SECRET}" \
                 --name cityfix-backend \
-                atheek/cityfix-backend
+                atheekrhmn/cityfix-backend
             EOF
           '''
         }

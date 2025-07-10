@@ -13,7 +13,7 @@ pipeline {
       }
     }
 
-    stage('Generate .env files') {
+    stage('Inject Secrets') {
       steps {
         writeFile file: 'backend/.env', text: """\
 MONGO_URI=${MONGO_URI}
@@ -27,15 +27,10 @@ VITE_API_BASE_URL=http://localhost:5000
       }
     }
 
-    stage('Build Docker Images') {
+    stage('Build & Deploy Containers') {
       steps {
-        bat 'docker-compose build'
-      }
-    }
-
-    stage('Start Containers') {
-      steps {
-        bat 'docker-compose up -d'
+        bat 'docker-compose -f docker-compose.prod.yml down'
+        bat 'docker-compose -f docker-compose.prod.yml up -d --build'
       }
     }
   }

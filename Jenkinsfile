@@ -34,7 +34,8 @@ pipeline {
       steps {
         sshagent (credentials: ['ec2-ssh-key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ec2-user@YOUR_EC2_PUBLIC_IP << 'EOF'
+            ssh -o StrictHostKeyChecking=no ec2-user@ec2-user@16.170.212.110
+ << 'EOF'
               docker pull atheekrhmn/cityfix-backend
 
               docker stop cityfix-backend || true

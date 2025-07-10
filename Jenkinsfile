@@ -13,24 +13,41 @@ pipeline {
       }
     }
 
-    stage('Inject Secrets') {
+    stage('Build Docker Image') {
       steps {
-        writeFile file: 'backend/.env', text: """\
-MONGO_URI=${MONGO_URI}
-JWT_SECRET=${JWT_SECRET}
-PORT=5000
-"""
-
-        writeFile file: 'frontend/.env', text: """\
-VITE_API_BASE_URL=http://localhost:5000
-"""
+        sh 'docker build -t atheek/cityfix-backend ./backend'
       }
     }
 
-    stage('Build & Deploy Containers') {
+    stage('Push to Docker Hub') {
       steps {
-        bat 'docker-compose -f docker-compose.prod.yml down'
-        bat 'docker-compose -f docker-compose.prod.yml up -d --build'
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh '''
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push atheek/cityfix-backend
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to EC2 via SSH') {
+      steps {
+        sshagent (credentials: ['ec2-ssh-key']) {
+          sh '''
+            ssh -o StrictHostKeyChecking=no ubuntu@YOUR_EC2_IP << EOF
+              docker pull atheek/cityfix-backend
+
+              docker stop cityfix-backend || true
+              docker rm cityfix-backend || true
+
+              docker run -d -p 5000:5000 \
+                -e MONGO_URI="$MONGO_URI" \
+                -e JWT_SECRET="$JWT_SECRET" \
+                --name cityfix-backend \
+                atheek/cityfix-backend
+            EOF
+          '''
+        }
       }
     }
   }
